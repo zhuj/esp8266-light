@@ -5,6 +5,9 @@
 # 0x1fc000 for 2 MB
 # 0x3fc000 for 4 MB, modules like ESP-12E, NodeMCU devkit 1.0, WeMos D1 mini
 
+# download esptool (if required)
+[ -f esptool.py ] || wget -c https://github.com/espressif/esptool/raw/master/esptool.py
+
 #./esptool.py --port /dev/ttyUSB0 erase_flash
 #exit 0
 

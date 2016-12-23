@@ -5,7 +5,7 @@ return function(port, light)
       gpio.mode(port, gpio.INPUT)
       gpio.trig(port, 'down', function()
 
-            print("reset: down")
+            print("Reset: start factory reset approvement...")
 
             local function stop()
                light:stop()
@@ -20,12 +20,14 @@ return function(port, light)
             -- start waiting
             local cnt = 0
 
-            -- wait for 5 seconds, if button is still pressed
+            -- wait for 10 seconds, if button is still pressed
             timer:register(500, tmr.ALARM_AUTO, function()
                if (gpio.read(port) == 1) then stop(); end
 
                cnt = cnt + 1
-               if (cnt > 10) then
+               print("Reset: factory reset", cnt)
+
+               if (cnt > 20) then
                   -- stop all
                   stop()
 

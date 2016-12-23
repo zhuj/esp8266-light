@@ -6,6 +6,14 @@ ESP8266 (ESP-01) controlled light
 
 #### Code usages
 
+##### NodeMCU
+
+NodeMCU is an [eLua](http://www.eluaproject.net/) based firmware for the [ESP8266 WiFi SOC from Espressif](http://espressif.com/en/products/esp8266/).
+
+* Code: https://github.com/nodemcu/nodemcu-firmware/
+* Documentation: https://nodemcu.readthedocs.io/en/dev/
+* License: MIT
+
 ##### nodemcu-httpserver
 
 A (very) simple web server written in Lua for the ESP8266 running the NodeMCU firmware.
