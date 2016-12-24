@@ -54,15 +54,30 @@ function constrain(x, a, b)
 end
 
 --
+function html_escape(s)
+   if (s == nil) then return ''; end
+   return (string.gsub(s, "[}{\">/<'&]", {
+      ["&"] = "&amp;",
+      ["<"] = "&lt;",
+      [">"] = "&gt;",
+      ['"'] = "&quot;",
+      ["'"] = "&#39;",
+      ["/"] = "&#47;"
+   }))
+end
+
+--
 Config = {}
 
 function Config:read(option, def)
    return try(function()
-      local value = nil
+      local value = def
       local fd = file.open("config/"..option, "r")
       if fd then
          value = trim_to_nil(fd:readline())
          fd:close()
+         fd = nil
+         collectgarbage()
       end
       if (value == nil) then return def; end
       return value
@@ -75,6 +90,8 @@ function Config:write(option, value)
       if fd then
          fd:writeline(trim_to_empty(value))
          fd:close()
+         fd = nil
+         collectgarbage()
       end
    end)
 end

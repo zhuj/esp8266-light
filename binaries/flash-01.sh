@@ -7,6 +7,7 @@
 
 # download esptool (if required)
 [ -f esptool.py ] || wget -c https://github.com/espressif/esptool/raw/master/esptool.py
+chmod +x esptool.py
 
 #./esptool.py --port /dev/ttyUSB0 erase_flash
 #exit 0
@@ -23,10 +24,8 @@ sleep 10 # reset with flash
   --flash_freq 40m --flash_mode qio --flash_size 4m \
   0x7C000 esp_init_data_default.bin \
   0x7E000 blank.bin \
-  0x00000 nodemcu-master-18-modules-2016-12-18-15-34-18-integer.bin
+  0x00000 nodemcu-master-12-modules-2016-12-24-15-16-44-integer.bin
 
 sleep 10 # wait for complete
-
-# 0x00000 nodemcu-master-12-modules-2016-12-18-11-33-39-integer.bin
 
 

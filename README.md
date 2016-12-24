@@ -15,15 +15,15 @@ There will be the picture of the project status (will be updated each time I hav
 
 NodeMCU is an [eLua](http://www.eluaproject.net/) based firmware for the [ESP8266 WiFi SOC from Espressif](http://espressif.com/en/products/esp8266/).
 
+* Home: https://nodemcu.readthedocs.io/en/dev/
 * Code: https://github.com/nodemcu/nodemcu-firmware/
-* Documentation: https://nodemcu.readthedocs.io/en/dev/
 * License: MIT
 
 #### nodemcu-httpserver
 
 A (very) simple web server written in Lua for the ESP8266 running the NodeMCU firmware.
 
-* Author: Marcos Kirsch
+* Author: [Marcos Kirsch](https://github.com/marcoskirsch)
 * Original code: https://github.com/marcoskirsch/nodemcu-httpserver
 * License: GPLv2
 
@@ -31,7 +31,7 @@ A (very) simple web server written in Lua for the ESP8266 running the NodeMCU fi
 
 A simple tool for uploading files to the filesystem of an ESP8266 running NodeMCU as well as some other useful commands.
 
-* Author: Peter Magnusson
+* Author: [Peter Magnusson](https://github.com/kmpm)
 * Original code: https://github.com/kmpm/nodemcu-uploader
 * Forked code: https://github.com/marcoskirsch/nodemcu-uploader
 * License: MIT
@@ -43,4 +43,3 @@ A Python-based, open source, platform independent, utility to communicate with t
 * Author: Angus Gratton
 * Original code: https://github.com/espressif/esptool
 * License: GPLv2
-

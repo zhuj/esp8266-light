@@ -27,9 +27,9 @@ end)
 -- 5, wake from deep sleep
 -- 6, external reset
 
-local reasons = { r0=true, r4=true, r5=true, r6=true }
+local reasons = { r0 = true, r4 = true, r5 = true, r6 = true }
 rawcode, reason = node.bootreason()
-if (reasons['r'..reason] == true) then
+if (reasons['r' .. reason] == true) then
 
    -- try to compile httpserver (if required)
    try(function()
@@ -40,5 +40,4 @@ if (reasons['r'..reason] == true) then
    try(function()
       dofile('esp8266-light-main.lua')
    end)
-
 end

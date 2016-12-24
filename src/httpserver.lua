@@ -9,11 +9,6 @@ require "common"
 
 -- Starts web server in the specified port.
 return function (port)
-   local Request = dofile("httpserver-request.lc")
-   local BufferedConnectionClass = dofile("httpserver-connection.lc")
-   local ErrorFunction = dofile("httpserver-error.lc")
-   local Static = dofile("httpserver-static.lc")
-
    local s = net.createServer(net.TCP, 10) -- 10 seconds client timeout
    s:listen(
       port,
@@ -38,7 +33,7 @@ return function (port)
                   end
                end)
 
-               local bufferedConnection = BufferedConnectionClass:new(connection)
+               local bufferedConnection = dofile("httpserver-connection.lc"):new(connection)
                local status, err = coroutine.resume(connectionThread, fileServeFunction, bufferedConnection, req, args)
                if not status then
                   print("Error: ", err)
@@ -47,7 +42,7 @@ return function (port)
          end
 
          local function handleRequest(connection, req)
-            try(function()
+            -- try(function()
                collectgarbage()
                local method = req.method
                local uri = req.uri
@@ -56,7 +51,7 @@ return function (port)
                if #(uri.file) > 32 then
                   -- nodemcu-firmware cannot handle long filenames.
                   uri.args = {code = 400, errorString = "Bad Request"}
-                  fileServeFunction = ErrorFunction
+                  fileServeFunction = dofile("httpserver-error.lc")
                else
                   local fileExists = file.exists(uri.file, "r")
                   if not fileExists then
@@ -71,31 +66,31 @@ return function (port)
 
                   if not fileExists then
                      uri.args = {code = 404, errorString = "Not Found"}
-                     fileServeFunction = ErrorFunction
+                     fileServeFunction = dofile("httpserver-error.lc")
                   elseif uri.isScript then
                      fileServeFunction = try(function()
                         return dofile(uri.file)
                      end)
                      if not fileServeFunction then
                         uri.args = {code = 500, errorString = "Error"}
-                        fileServeFunction = ErrorFunction
+                        fileServeFunction = dofile("httpserver-error.lc")
                      end
                   else
                      if allowStatic[method] then
                         uri.args = {file = uri.file, ext = uri.ext, isGzipped = uri.isGzipped}
-                        fileServeFunction = Static
+                        fileServeFunction = dofile("httpserver-static.lc")
                      else
                         uri.args = {code = 405, errorString = "Method not supported"}
-                        fileServeFunction = ErrorFunction
+                        fileServeFunction = dofile("httpserver-error.lc")
                      end
                   end
                end
                startServing(fileServeFunction, connection, req, uri.args)
-            end)
+            --end)
          end
 
          local function onReceive(connection, payload)
-            try(function()
+            --try(function()
                collectgarbage()
 
                -- as suggest by anyn99 (https://github.com/marcoskirsch/nodemcu-httpserver/issues/36#issuecomment-167442461)
@@ -115,14 +110,14 @@ return function (port)
                collectgarbage()
 
                -- parse payload and decide what to serve.
-               local req = Request(payload)
+               local req = dofile("httpserver-request.lc")(payload)
                print(req.method .. ": " .. req.request)
 
                if req.methodIsValid and (req.method == "GET" or req.method == "POST" or req.method == "PUT") then
                   handleRequest(connection, req)
                else
                   local args = {}
-                  local fileServeFunction = ErrorFunction
+                  local fileServeFunction = dofile("httpserver-error.lc")
                   if req.methodIsValid then
                      args = {code = 501, errorString = "Not Implemented"}
                   else
@@ -130,11 +125,11 @@ return function (port)
                   end
                   startServing(fileServeFunction, connection, req, args)
                end
-            end)
+            --end)
          end
 
          local function onSent(connection, payload)
-            try(function()
+            --try(function()
                collectgarbage()
                if connectionThread then
                   local connectionThreadStatus = coroutine.status(connectionThread)
@@ -150,16 +145,16 @@ return function (port)
                      connectionThread = nil
                   end
                end
-            end)
+            --end)
          end
 
          local function onDisconnect(connection, payload)
-            try(function()
+            --try(function()
                if connectionThread then
                   connectionThread = nil
-                  collectgarbage()
                end
-            end)
+               collectgarbage()
+            --end)
          end
 
          connection:on("receive", onReceive)
