@@ -1,8 +1,8 @@
 require "common"
 
--- load light
-local light = dofile("esp8266-light-object.lua")(GPIO2)
-light:blink(10)
+-- load light (global object)
+light = dofile("esp8266-light-object.lua")(GPIO2)
+light:blink(50, 50)
 
 -- reset callback
 dofile("esp8266-light-reset.lua")(GPIO0, light)

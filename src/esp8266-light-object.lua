@@ -10,6 +10,11 @@ return function(port)
       light.port = port
       light.timer = tmr:create()
 
+      local function _step(step)
+         if (step == nil) then step = 0; end
+         return constrain(math.abs(step), 1, 1023)
+      end
+
       local function _stop_timer(timer)
          if (timer) then
             timer:stop()
@@ -17,27 +22,34 @@ return function(port)
          end
       end
 
-      function light:pwm(clk)
+      local function _pwm(port, clk)
          clk = constrain(clk, 0, 1023)
          if (clk > 0) then
-            pwm.setup(self.port, 500, clk)
-            pwm.start(self.port)
+            if ((pwm.getclock(port) > 0) and (pwm.getduty(port) > 0)) then
+               pwm.setduty(port, clk)
+            else
+               pwm.setup(port, 500, clk)
+               pwm.start(port)
+            end
          else
-            pwm.stop(self.port)
-            pwm.close(self.port)
+            pwm.stop(port)
+            pwm.close(port)
          end
       end
 
-      function light:stop()
+      function light:pwm(clk)
          _stop_timer(self.timer)
+         _pwm(self.port, clk)
+      end
+
+      function light:stop()
          self:pwm(0)
          gpio.write(self.port, gpio.LOW)
       end
 
       function light:start()
-         _stop_timer(self.timer)
          self:pwm(0)
-         gpio.write(self.port, gpio.HIHG)
+         gpio.write(self.port, gpio.HIGH)
       end
 
 
@@ -63,7 +75,7 @@ return function(port)
          light.timer:alarm(interval, tmr.ALARM_AUTO, function()
             if (i < j) then
                -- DEBUG: print("_change:click:", a, b, step, i, j, (a + i*step))
-               light:pwm(a + i*step)
+               _pwm(light.port, (a + i*step))
                i = i + 1
             else
                -- DEBUG: print("_change:finish:", callback)
@@ -76,31 +88,38 @@ return function(port)
       end
 
 
-      function light:up(interval)
+      function light:up(interval, step)
+         step = _step(step)
+
          self:stop()
-         _change(self, interval, 0, 1023, 20, nil)
-         self:start()
+         _change(self, interval, 0, 1023, step, function()
+            self:start()
+         end)
       end
 
-      function light:down(interval)
+      function light:down(interval, step)
+         step = _step(step)
+
          self:start()
-         _change(self, interval, 1023, 0, 20, nil)
-         self:stop()
+         _change(self, interval, 1023, 0, step, function()
+            self:stop()
+         end)
       end
 
 
-      function light:blink(interval)
+      function light:blink(interval, step)
          self:stop()
+         step = _step(step)
 
          local holder = { light = self }
 
          holder.up = function()
             -- DEBUG: print("blink:up")
-            _change(holder.light, interval, 0, 1023, 20, holder.down)
+            _change(holder.light, interval, 0, 1023, step, holder.down)
          end
          holder.down = function()
             -- DEBUG: print("blink:down")
-            _change(holder.light, interval, 1023, 0, 20, holder.up)
+            _change(holder.light, interval, 1023, 0, step, holder.up)
          end
 
          holder.up()
