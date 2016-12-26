@@ -21,7 +21,7 @@ dofile("esp8266-light-wifi-connect.lua")(function(connect)
    })
 
    -- start http server
-   dofile("httpserver.lc")(80)
+   dofile("httpserver.lua")(80)
 
    -- sntp (if connected)
    if (connect) then

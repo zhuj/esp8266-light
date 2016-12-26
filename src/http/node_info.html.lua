@@ -1,3 +1,10 @@
+-- Author: Marcos Kirsch
+-- Original code: https://github.com/marcoskirsch/nodemcu-httpserver
+-- GNU General Public License, version 2
+
+-- httpserver
+-- Author: Marcos Kirsch
+
 local function sendAttr(connection, attr, val)
    if (val) then
       connection:send("<li><b>" .. attr .. ":</b> " .. val .. "<br></li>\n")
@@ -5,7 +12,8 @@ local function sendAttr(connection, attr, val)
 end
 
 return function(connection, req, args)
-   dofile("httpserver-header.lc")(connection, 200, 'html')
+   dofile("httpserver-header.lua")(connection, 200, 'html')
+
    connection:send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="main.css"/></head><body><h1>Node info</h1><ul>')
    local majorVer, minorVer, devVer, chipid, flashid, flashsize, flashmode, flashspeed = node.info();
    sendAttr(connection, "NodeMCU version", majorVer .. "." .. minorVer .. "." .. devVer)
@@ -21,5 +29,4 @@ return function(connection, req, args)
       sendAttr(connection, 'MAC address', wifi.sta.getmac())
    end
    connection:send('</ul></body></html>')
-   -- print("Heap:" .. node.heap())
 end

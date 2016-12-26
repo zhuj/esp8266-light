@@ -33,7 +33,7 @@ if (reasons['r' .. reason] == true) then
 
    -- try to compile httpserver (if required)
    try(function()
-      dofile("httpserver-compile.lua")
+      dofile("esp8266-light-compile.lua")
    end)
 
    -- try to start

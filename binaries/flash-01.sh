@@ -24,8 +24,9 @@ sleep 10 # reset with flash
   --flash_freq 40m --flash_mode qio --flash_size 4m \
   0x7C000 esp_init_data_default.bin \
   0x7E000 blank.bin \
-  0x00000 nodemcu-master-12-modules-2016-12-24-15-16-44-integer.bin
+  0x00000 nodemcu-master-14-modules-2016-12-26-14-25-36-integer.bin
 
 sleep 10 # wait for complete
+
 
 

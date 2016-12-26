@@ -23,7 +23,7 @@ GPIO16  = 0   -- ESP-01: unwired, D0(GPIO16) can only be used as gpio read/write
 
 --
 function try(what)
-   status, err = pcall(what)
+   local status, err = pcall(what)
    if (not status) then
       print('Error: ', err)
       return nil

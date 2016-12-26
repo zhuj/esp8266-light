@@ -39,3 +39,9 @@ luac.out
 *.x86_64
 *.hex
 
+# project specific .gitignore
+src/config
+binaries/esptool.py
+ESPlorer
+nodemcu-httpserver
+nodemcu-uploader

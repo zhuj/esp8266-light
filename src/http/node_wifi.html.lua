@@ -1,10 +1,6 @@
 require "common"
-return function(connection, req, args)
-   dofile("httpserver-header.lc")(connection, 200, 'html')
-
-   connection:send([===[
-      <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="main.css"/><title>ESP8266-Light: Wi-Fi Client Config</title></head><body>
-   ]===])
+local html = dofile("esp8266-light-html.lua")
+return html("Wi-Fi Client Config", function(connection, req, args)
 
    if (req.method == "POST") then
       -- POST
@@ -28,6 +24,4 @@ return function(connection, req, args)
     </form>
    ]===])
 
-   connection:send([===[</body></html>]===])
-   -- print("Heap:" .. node.heap())
-end
+end)

@@ -15,57 +15,68 @@ BufferedConnection = {}
 function BufferedConnection:new(connection)
    local newInstance = {}
    newInstance.connection = connection
-   newInstance.size = 0
-   newInstance.data = {}
+   newInstance.data = ""
 
-   function newInstance:flush()
-      if self.size > 0 then
-         self.connection:send(table.concat(self.data, ""))
-         self.data = {}
-         self.size = 0
-         return true
+   function newInstance:flush(yield)
+      local sz = #(self.data)
+      if (sz > 0) then
+         self.connection:send(self.data)
+         self.data = ""
+         collectgarbage()
+         if (yield) then
+            coroutine.yield()
+            collectgarbage()
+         end
       end
-      return false
+      return sz
    end
 
    function newInstance:send(payload)
-      local flushthreshold = 1400
-
-      local newsize = self.size + payload:len()
-      while newsize > flushthreshold do
-         --STEP1: cut out piece from payload to complete threshold bytes in table
-         local piecesize = flushthreshold - self.size
-         local piece = payload:sub(1, piecesize)
-         payload = payload:sub(piecesize + 1, -1)
-         --STEP2: insert piece into table
-         table.insert(self.data, piece)
-         self.size = self.size + piecesize --size should be same as flushthreshold
-         --STEP3: flush entire table
-         if self:flush() then
-            coroutine.yield()
-         end
-         --at this point, size should be 0, because the table was just flushed
-         newsize = self.size + payload:len()
+      if (payload == nil) then
+         return
       end
 
-      --at this point, whatever is left in payload should be <= flushthreshold
-      local plen = payload:len()
-      if plen == flushthreshold then
-         --case 1: what is left in payload is exactly flushthreshold bytes (boundary case), so flush it
-         table.insert(self.data, payload)
-         self.size = self.size + plen
-         if self:flush() then
-            coroutine.yield()
+      local flushthreshold = 500
+      while (true) do
+
+         -- first, check for emptiness
+         local sz = #(payload)
+         if (sz <= 0) then
+            return
          end
-      elseif payload:len() then
-         --case 2: what is left in payload is less than flushthreshold, so just leave it in the table
-         table.insert(self.data, payload)
-         self.size = self.size + plen
-         --else, case 3: nothing left in payload, so do nothing
+
+         -- then, check if the data fits
+         local possible = (flushthreshold - #(self.data))
+         if (sz <= possible) then
+            if (#(self.data) > 0) then
+               self.data = self.data .. payload
+            else
+               self.data = payload
+            end
+            payload = nil
+            collectgarbage()
+            if (sz == possible) then
+               self:flush(true)
+            end
+            return
+         end
+
+         -- othwewise, split the string
+         local piece = payload:sub(1, possible)
+         payload = payload:sub(possible + 1)
+
+         if (#(self.data) > 0) then
+            self.data = self.data .. piece
+         else
+            self.data = piece
+         end
+         piece = nil
+
+         -- and flush it (with yield)
+         self:flush(true)
       end
+
    end
 
    return newInstance
 end
-
-return BufferedConnection
