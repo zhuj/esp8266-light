@@ -114,7 +114,7 @@ return function (port)
          local cl = body:find("Content-Length: ", 1, true)
          if (cl) then
             cl = tonumber(body:match("%d+", cl+16))
-            if (cl > #(body) - (body:find("\r\n\r\n", 1, true)+4)) then
+            if (cl > #(body) - (body:find("\r\n\r\n", 1, true)+4) + 1) then
                return false
             end
          end
