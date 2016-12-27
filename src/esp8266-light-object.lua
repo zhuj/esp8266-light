@@ -7,6 +7,7 @@ return function(port)
 
    -- setup new instance
    local light = {}
+   light.state = ''
    light.port = port
    light.timer = tmr:create()
 
@@ -40,16 +41,19 @@ return function(port)
    function light:pwm(clk)
       _stop_timer(self.timer)
       _pwm(self.port, clk)
+      self.state = 'pwm'
    end
 
    function light:stop()
       self:pwm(0)
       gpio.write(self.port, gpio.LOW)
+      self.state = 'off'
    end
 
    function light:start()
       self:pwm(0)
       gpio.write(self.port, gpio.HIGH)
+      self.state = 'on'
    end
 
 
@@ -85,23 +89,21 @@ return function(port)
             end
          end
       end)
+
+      light.state = 'pwm'
    end
 
 
    function light:up(interval, step)
-      step = _step(step)
-
       self:stop()
-      _change(self, interval, 0, 1023, step, function()
+      _change(self, interval, 0, 1023, _step(step), function()
          self:start()
       end)
    end
 
    function light:down(interval, step)
-      step = _step(step)
-
       self:start()
-      _change(self, interval, 1023, 0, step, function()
+      _change(self, interval, 1023, 0, _step(step), function()
          self:stop()
       end)
    end

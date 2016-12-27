@@ -41,6 +41,7 @@ return function (port)
          )
 
          if (not status) then
+            print("Error: " .. err)
             connection:close()
             connectionThread = nil
          end
@@ -76,7 +77,12 @@ return function (port)
             if (not fileExists) then
                fileExists = file.exists(uri.file .. ".lua", "r")
                if (fileExists) then
-                  -- uri.file = uri.file .. ".lua"
+                  uri.isScript = true
+               end
+            end
+            if (not fileExists) then
+               fileExists = file.exists(uri.file .. ".lc", "r")
+               if (fileExists) then
                   uri.isScript = true
                end
             end
@@ -169,6 +175,7 @@ return function (port)
                -- Not finished sending file, resume.
                local status, err = coroutine.resume(connectionThread)
                if (not status) then
+                  print("Error: " .. err)
                   connection:close()
                   body = nil
                   connectionThread = nil

@@ -12,6 +12,7 @@ end
 
 -- common code
 compileAndRemoveIfNeeded('common.lua')
+compileAndRemoveIfNeeded('time-zones.lua')
 
 -- esp8266-light
 compileAndRemoveIfNeeded('esp8266-light-html.lua')
@@ -28,6 +29,13 @@ compileAndRemoveIfNeeded('httpserver-error.lua')
 compileAndRemoveIfNeeded('httpserver-header.lua')
 compileAndRemoveIfNeeded('httpserver-request.lua')
 compileAndRemoveIfNeeded('httpserver-static.lua')
+
+-- http folder
+for fn, sz in pairs(file.list()) do
+   if (fn:find('^http%/.*%.lua$') == 1) then
+      compileAndRemoveIfNeeded(fn)
+   end
+end
 
 -- clean up
 compileAndRemoveIfNeeded = nil

@@ -30,13 +30,40 @@ doscript("esp8266-light-wifi-connect")(function(connect)
          -- get time
          local tm = rtctime.epoch2cal(rtctime.get())
          local hour = tm['hour']
+         if (hour == nil) then
+            return
+         end
 
-         -- @TODO here is the place I have to check time and turn the light on or off
+         local tz = config_read("light/timezone", nil)
+         if (tz ~= nil) then
+            print("Info: Timezone: ", tz)
+            tz = doscript("time-zones")[tz]
+            if (tz ~= nil) then
+               hour = (hour + tz[3]) % 24 -- Wow! Lua works with negative modulas! nice!
+            end
+            tz = nil
+         end
+
          print("Info: Hour: ", hour)
+
+         local hours = config_read("light/hours", '')
+         print("Info: Hours: ", hours)
+
+         local selected = (hours:find('|'..hour..'|', 1, true) ~= nil)
+         if (selected) then
+            if (light.state ~= 'on') then
+               light:up(150, 5)
+            end
+         else
+            if (light.state ~= 'off') then
+               light:down(150, 5)
+            end
+         end
 
          -- free all resources
          tm = nil
          hour = nil
+         hours = nil
          collectgarbage()
       end)
       timer:start()

@@ -13,16 +13,16 @@ return function(connection, req)
    local ssid = config_read("stationPointConfig/ssid", '')
    local pass = config_read("stationPointConfig/pass", '')
 
-   connection:send([===[
+   connection:send([=[
     <h1>Wi-Fi Client Config</h1>
     <form method="POST">
      <table class="fields">
-      <tr><td>SSID:</td><td><input type="text" name="ssid" value="]===] .. html_escape(ssid) .. [===["/></td></tr>
-      <tr><td>Pass:</td><td><input type="text" name="pass" value="]===] .. html_escape(pass) .. [===["/></td></tr>
+      <tr><td>SSID:</td><td><input type="text" name="ssid" value="]=] .. html_escape(ssid) .. [=["/></td></tr>
+      <tr><td>Pass:</td><td><input type="text" name="pass" value="]=] .. html_escape(pass) .. [=["/></td></tr>
      </table>
      <input type="submit" name="submit" value="Submit">
     </form>
-   ]===])
+   ]=])
 
    html_footer(connection)
 end

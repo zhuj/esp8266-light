@@ -99,6 +99,7 @@ function config_write(option, value)
          fd:close()
          fd = nil
          collectgarbage()
+         print("config_write: " .. option .. " = [" .. value .. "]")
       end
    end)
 end
