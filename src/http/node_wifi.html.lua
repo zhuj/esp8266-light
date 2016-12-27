@@ -1,17 +1,17 @@
-require "common"
-local html = dofile("esp8266-light-html.lua")
-return html("Wi-Fi Client Config", function(connection, req, args)
+require "esp8266-light-html"
+return function(connection, req)
+   html_header(connection, "Wi-Fi Client Config")
 
    if (req.method == "POST") then
       -- POST
-      local rd = req.getRequestData()
-      Config:write("stationPointConfig/ssid", rd.ssid)
-      Config:write("stationPointConfig/pass", rd.pass)
+      local rd = req.requestData
+      config_write("stationPointConfig/ssid", rd.ssid)
+      config_write("stationPointConfig/pass", rd.pass)
       -- POST
    end
 
-   local ssid = Config:read("stationPointConfig/ssid", '')
-   local pass = Config:read("stationPointConfig/pass", '')
+   local ssid = config_read("stationPointConfig/ssid", '')
+   local pass = config_read("stationPointConfig/pass", '')
 
    connection:send([===[
     <h1>Wi-Fi Client Config</h1>
@@ -24,4 +24,5 @@ return html("Wi-Fi Client Config", function(connection, req, args)
     </form>
    ]===])
 
-end)
+   html_footer(connection)
+end

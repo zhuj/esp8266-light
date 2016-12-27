@@ -9,10 +9,7 @@
 -- flush() and for closing the connection.
 -- Author: Philip Gladstone, Marcos Kirsch
 
-BufferedConnection = {}
-
--- parameter is the nodemcu-firmware connection
-function BufferedConnection:new(connection)
+return function(connection)
    local newInstance = {}
    newInstance.connection = connection
    newInstance.data = ""
@@ -31,22 +28,27 @@ function BufferedConnection:new(connection)
       return sz
    end
 
+   function newInstance:possible()
+      local flushthreshold = 500
+      return (flushthreshold - #(self.data))
+   end
+
    function newInstance:send(payload)
       if (payload == nil) then
          return
       end
 
-      local flushthreshold = 500
       while (true) do
 
          -- first, check for emptiness
          local sz = #(payload)
          if (sz <= 0) then
+            collectgarbage()
             return
          end
 
          -- then, check if the data fits
-         local possible = (flushthreshold - #(self.data))
+         local possible = self:possible()
          if (sz <= possible) then
             if (#(self.data) > 0) then
                self.data = self.data .. payload

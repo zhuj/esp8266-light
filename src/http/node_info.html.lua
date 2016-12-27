@@ -11,10 +11,11 @@ local function sendAttr(connection, attr, val)
    end
 end
 
-return function(connection, req, args)
-   dofile("httpserver-header.lua")(connection, 200, 'html')
+require "esp8266-light-html"
+return function(connection, req)
+   html_header(connection, "Wi-Fi Client Config")
 
-   connection:send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="main.css"/></head><body><h1>Node info</h1><ul>')
+   connection:send('<h1>Node info</h1><ul>')
    local majorVer, minorVer, devVer, chipid, flashid, flashsize, flashmode, flashspeed = node.info();
    sendAttr(connection, "NodeMCU version", majorVer .. "." .. minorVer .. "." .. devVer)
    sendAttr(connection, "chipid", chipid)
@@ -28,5 +29,7 @@ return function(connection, req, args)
       sendAttr(connection, 'IP address', wifi.sta.getip())
       sendAttr(connection, 'MAC address', wifi.sta.getmac())
    end
-   connection:send('</ul></body></html>')
+   connection:send('</ul>')
+
+   html_footer(connection)
 end

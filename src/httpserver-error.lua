@@ -6,7 +6,7 @@
 -- Part of nodemcu-httpserver, handles sending error pages to client.
 -- Author: Marcos Kirsch
 
-return function (connection, req, args)
+return function (connection, req)
 
    -- @TODO: would be nice to use httpserver-header.lua
    local function getHeader(connection, code, errorString, extraHeaders, mimeType)
@@ -18,6 +18,7 @@ return function (connection, req, args)
       return header
    end
 
+   local args = req.uri.args
    print("Error " .. args.code .. ": " .. args.errorString)
    args.headers = args.headers or {}
    connection:send(getHeader(connection, args.code, args.errorString, args.headers, "text/html"))

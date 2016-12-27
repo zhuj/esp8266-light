@@ -40,6 +40,14 @@ A simple tool for uploading files to the filesystem of an ESP8266 running NodeMC
 
 A Python-based, open source, platform independent, utility to communicate with the ROM bootloader in Espressif ESP8266.
 
-* Author: Angus Gratton
+* Authors: Fredrik Ahlberg, Angus Gratton, [Espressif Systems](https://github.com/espressif).
 * Original code: https://github.com/espressif/esptool
+* License: GPLv2
+
+#### ESPlorer
+
+Integrated Development Environment (IDE) for ESP8266 developers
+
+* Author: [Victor Brutskiy](https://github.com/4refr0nt)
+* Original code: https://github.com/4refr0nt/ESPlorer
 * License: GPLv2

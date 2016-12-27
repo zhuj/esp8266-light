@@ -43,5 +43,6 @@ luac.out
 src/config
 binaries/esptool.py
 ESPlorer
+nodemcu-firmware
 nodemcu-httpserver
 nodemcu-uploader

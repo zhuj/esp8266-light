@@ -1,14 +1,14 @@
 require "common"
 
 -- load light (global object)
-light = dofile("esp8266-light-object.lua")(GPIO2)
+light = doscript("esp8266-light-object")(GPIO2)
 light:blink(50, 50)
 
 -- reset callback
-dofile("esp8266-light-reset.lua")(GPIO0, light)
+doscript("esp8266-light-reset")(GPIO0, light)
 
 -- start wifi
-dofile("esp8266-light-wifi-connect.lua")(function(connect)
+doscript("esp8266-light-wifi-connect")(function(connect)
 
    -- stop the light
    light:stop()
@@ -21,11 +21,11 @@ dofile("esp8266-light-wifi-connect.lua")(function(connect)
    })
 
    -- start http server
-   dofile("httpserver.lua")(80)
+   doscript("httpserver")(80)
 
    -- sntp (if connected)
    if (connect) then
-      local timer = dofile("esp8266-light-time.lua")("pool.ntp.org", function()
+      local timer = doscript("esp8266-light-time")("pool.ntp.org", function()
 
          -- get time
          local tm = rtctime.epoch2cal(rtctime.get())

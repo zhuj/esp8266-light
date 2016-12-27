@@ -40,26 +40,15 @@ local function parseFormData(body)
 end
 
 local function getRequestData(payload)
-   local requestData
-   return function ()
-      if (requestData ~= nil) then
-         return requestData
-      else
-         local mimeType = payload:match("Content%-Type: ([%w/-]+)")
-         local bodyStart = payload:find("\r\n\r\n", 1, true)
-         local body = payload:sub(bodyStart)
-         payload = nil
-         collectgarbage()
-         if (mimeType == "application/json") then
-            requestData = cjson.decode(body)
-         elseif (mimeType == "application/x-www-form-urlencoded") then
-            requestData = parseFormData(body)
-         else
-            requestData = {}
-         end
-         return requestData
-      end
+   local mimeType = payload:match("Content%-Type: ([%w/-]+)")
+   local bodyStart = payload:find("\r\n\r\n", 1, true)
+   local body = payload:sub(bodyStart)
+   if (mimeType == "application/json") then
+      return cjson.decode(body)
+   elseif (mimeType == "application/x-www-form-urlencoded") then
+      return parseFormData(body)
    end
+   return {}
 end
 
 local function parseUri(uri)
@@ -96,6 +85,6 @@ return function (request)
    local r = {}
    _, _, r.method, r.request = request:find("^([A-Z]+) (.+) HTTP")
    r.uri = parseUri(r.request)
-   r.getRequestData = getRequestData(request)
+   r.requestData = getRequestData(request)
    return r
 end

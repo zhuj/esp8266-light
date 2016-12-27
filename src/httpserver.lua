@@ -6,11 +6,11 @@
 -- Author: Marcos Kirsch
 
 require "common"
-require "httpserver-connection"
 
 -- Starts web server in the specified port.
 return function (port)
-   local s = net.createServer(net.TCP, 10) -- 10 seconds client timeout
+
+   local s = net.createServer(net.TCP, 2) -- 2 seconds client timeout
    s:listen(port, function (connection)
 
       -- This variable holds the thread (actually a Lua coroutine) used for sending data back to the user.
@@ -18,46 +18,47 @@ return function (port)
       -- before we can send more, or we risk overflowing the mcu's buffer.
       local connectionThread
 
-      local function startServing(fileServeFunction, connection, req, args)
-         connectionThread = coroutine.create(function(fileServeFunction, bufferedConnection, req, args)
-            --try(function()
-               fileServeFunction(bufferedConnection, req, args)
-            --end)
+      local function startServing(serveFunction, connection, req)
+         connectionThread = coroutine.create(function(f, bufferedConnection, req)
+            doscript(f)(bufferedConnection, req)
 
             -- The bufferedConnection may still hold some data that hasn't been sent. Flush it before closing.
             if (bufferedConnection:flush() <= 0) then
                connection:close()
                connectionThread = nil
-               collectgarbage()
             end
+
+            -- clean all
+            bufferedConnection = nil
+            collectgarbage()
          end)
 
          local status, err = coroutine.resume(
             connectionThread,
-            fileServeFunction,
-            BufferedConnection:new(connection),
-            req,
-            args
+            serveFunction,
+            doscript("httpserver-connection")(connection),
+            req
          )
 
          if (not status) then
-            print("Error: ", err)
             connection:close()
             connectionThread = nil
-            collectgarbage()
          end
+
+         -- clean up after all
+         collectgarbage()
       end
 
       local function handleRequest(connection, req)
          collectgarbage()
          local method = req.method
          local uri = req.uri
-         local fileServeFunction
+         local serveFunction
 
          if #(uri.file) > 32 then
             -- nodemcu-firmware cannot handle long filenames.
             uri.args = {code = 400, errorString = "Bad Request"}
-            fileServeFunction = dofile("httpserver-error.lua")
+            serveFunction = "httpserver-error"
          else
             -- check for static resources first
             local fileExists = file.exists(uri.file, "r")
@@ -75,7 +76,7 @@ return function (port)
             if (not fileExists) then
                fileExists = file.exists(uri.file .. ".lua", "r")
                if (fileExists) then
-                  uri.file = uri.file .. ".lua"
+                  -- uri.file = uri.file .. ".lua"
                   uri.isScript = true
                end
             end
@@ -83,32 +84,30 @@ return function (port)
             -- process file
             if (not fileExists) then
                uri.args = {code = 404, errorString = "Not Found"}
-               fileServeFunction = dofile("httpserver-error.lua")
+               serveFunction = "httpserver-error"
 
             elseif (uri.isScript) then
-               fileServeFunction = try(function()
-                  return dofile(uri.file)
-               end)
-               if (not fileServeFunction) then
+               serveFunction = uri.file
+               if (not serveFunction) then
                   uri.args = {code = 500, errorString = "Error"}
-                  fileServeFunction = dofile("httpserver-error.lua")
+                  serveFunction = "httpserver-error"
                end
 
             else
                local allowStatic = { GET=true }
                if (allowStatic[method] == true) then
                   uri.args = {file = uri.file, ext = uri.ext, isGzipped = uri.isGzipped}
-                  fileServeFunction = dofile("httpserver-static.lua")
+                  serveFunction = "httpserver-static"
                else
                   uri.args = {code = 405, errorString = "Method not supported"}
-                  fileServeFunction = dofile("httpserver-error.lua")
+                  serveFunction = "httpserver-error"
                end
 
             end
          end
 
          collectgarbage()
-         startServing(fileServeFunction, connection, req, uri.args)
+         startServing(serveFunction, connection, req)
       end
 
       local function isBodyComplete(body)
@@ -141,21 +140,28 @@ return function (port)
          collectgarbage()
 
          -- parse payload and decide what to serve.
-         local req = dofile("httpserver-request.lua")(payload)
+         local req = doscript("httpserver-request")(payload)
          print(req.method .. ": " .. req.request)
+
+         -- collect all garbage
          req.request = nil
+         payload = nil
+         collectgarbage()
 
          local allowRequest = { GET=true, POST=true, PUT=true }
          if (allowRequest[req.method] == true) then
             handleRequest(connection, req)
          else
-            local fileServeFunction = dofile("httpserver-error.lua")
-            local args = {code = 501, errorString = "Not Implemented"}
-            startServing(fileServeFunction, connection, req, args)
+            local fileServeFunction = "httpserver-error"
+            req.uni.args = {code = 501, errorString = "Not Implemented"}
+            startServing(fileServeFunction, connection, req)
          end
+
+         -- collect all garbage
+         collectgarbage()
       end
 
-      local function onSent(connection, payload)
+      local function onSent(connection)
          collectgarbage()
          if (connectionThread) then
             local connectionThreadStatus = coroutine.status(connectionThread)
@@ -163,24 +169,24 @@ return function (port)
                -- Not finished sending file, resume.
                local status, err = coroutine.resume(connectionThread)
                if (not status) then
-                  print("Error: ", err)
                   connection:close()
+                  body = nil
                   connectionThread = nil
                   collectgarbage()
                end
             elseif (connectionThreadStatus == "dead") then
                -- We're done sending file.
                connection:close()
+               body = nil
                connectionThread = nil
                collectgarbage()
             end
          end
       end
 
-      local function onDisconnect(connection, payload)
-         if connectionThread then
-            connectionThread = nil
-         end
+      local function onDisconnect(connection)
+         body = nil
+         connectionThread = nil
          collectgarbage()
       end
 

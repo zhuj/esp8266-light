@@ -11,7 +11,7 @@ return function(port)
    light.timer = tmr:create()
 
    local function _step(step)
-      if (step == nil) then step = 0; end
+      if (step == nil) then return 1; end
       return constrain(math.abs(step), 1, 1023)
    end
 
@@ -112,7 +112,6 @@ return function(port)
       step = _step(step)
 
       local holder = { light = self }
-
       holder.up = function()
          -- DEBUG: print("blink:up")
          _change(holder.light, interval, 0, 1023, step, holder.down)

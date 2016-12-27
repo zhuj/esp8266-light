@@ -17,8 +17,8 @@ wifiConfig.accessPointIpConfig.netmask = "255.255.255.0"
 wifiConfig.accessPointIpConfig.gateway = "192.168.0.1"
 
 wifiConfig.stationPointConfig = {}
-wifiConfig.stationPointConfig.ssid = Config:read("stationPointConfig/ssid", nil)
-wifiConfig.stationPointConfig.pwd = Config:read("stationPointConfig/pass", nil)
+wifiConfig.stationPointConfig.ssid = config_read("stationPointConfig/ssid", nil)
+wifiConfig.stationPointConfig.pwd = config_read("stationPointConfig/pass", nil)
 
 if (wifiConfig.stationPointConfig.ssid and wifiConfig.stationPointConfig.pwd) then
    wifiConfig.mode = wifi.STATIONAP -- both station and access point

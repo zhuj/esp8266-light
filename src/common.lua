@@ -32,6 +32,14 @@ function try(what)
 end
 
 --
+function doscript(script)
+   if (file.exists(script .. '.lc')) then
+      return dofile(script .. '.lc')
+   end
+   return dofile(script .. '.lua')
+end
+
+--
 function trim_to_nil(s)
    if (not s) then return nil; end
    s = (s:gsub("^%s*(.-)%s*$", "%1"))
@@ -67,9 +75,7 @@ function html_escape(s)
 end
 
 --
-Config = {}
-
-function Config:read(option, def)
+function config_read(option, def)
    return try(function()
       local value = def
       local fd = file.open("config/"..option, "r")
@@ -84,7 +90,8 @@ function Config:read(option, def)
    end)
 end
 
-function Config:write(option, value)
+--
+function config_write(option, value)
    return try(function()
       local fd = file.open("config/"..option, "w+")
       if fd then

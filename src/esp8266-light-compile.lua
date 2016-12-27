@@ -11,15 +11,23 @@ local compileAndRemoveIfNeeded = function(f)
 end
 
 -- common code
---compileAndRemoveIfNeeded('common.lua')
+compileAndRemoveIfNeeded('common.lua')
+
+-- esp8266-light
+compileAndRemoveIfNeeded('esp8266-light-html.lua')
+compileAndRemoveIfNeeded('esp8266-light-main.lua')
+compileAndRemoveIfNeeded('esp8266-light-object.lua')
+compileAndRemoveIfNeeded('esp8266-light-reset.lua')
+compileAndRemoveIfNeeded('esp8266-light-time.lua')
+compileAndRemoveIfNeeded('esp8266-light-wifi-connect.lua')
 
 -- http server
---compileAndRemoveIfNeeded('httpserver.lua')
---compileAndRemoveIfNeeded('httpserver-connection.lua')
---compileAndRemoveIfNeeded('httpserver-error.lua')
---compileAndRemoveIfNeeded('httpserver-header.lua')
---compileAndRemoveIfNeeded('httpserver-request.lua')
---compileAndRemoveIfNeeded('httpserver-static.lua')
+compileAndRemoveIfNeeded('httpserver.lua')
+compileAndRemoveIfNeeded('httpserver-connection.lua')
+compileAndRemoveIfNeeded('httpserver-error.lua')
+compileAndRemoveIfNeeded('httpserver-header.lua')
+compileAndRemoveIfNeeded('httpserver-request.lua')
+compileAndRemoveIfNeeded('httpserver-static.lua')
 
 -- clean up
 compileAndRemoveIfNeeded = nil

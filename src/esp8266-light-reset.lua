@@ -32,9 +32,9 @@ return function(port, light)
             stop()
 
             -- reset config
-            Config:write("stationPointConfig/ssid", nil)
-            Config:write("stationPointConfig/pass", nil)
-            Config:write("light/hours", nil)
+            config_write("stationPointConfig/ssid", nil)
+            config_write("stationPointConfig/pass", nil)
+            config_write("light/hours", nil)
 
             -- restart
             node.restart()

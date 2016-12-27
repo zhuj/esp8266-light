@@ -1,12 +1,13 @@
-require "common"
-local html = dofile("esp8266-light-html.lua")
-return html("Main", function(connection, req, args)
+require "esp8266-light-html"
+return function(connection, req)
+   html_header(connection, "Main")
    connection:send([===[
- <h1>Hello World!</h1>
-   <ul>
-      <li><a href="index.html">Index</a>: This page (static)</li>
-      <li><a href="node_wifi.html">Station Config</a>: Controls Wi-Fi Client</li>
-      <li><a href="node_info.html">NodeMCU info</a>: Shows some basic NodeMCU</li>
- </ul>
+    <h1>Hello World!</h1>
+      <ul>
+         <li><a href="index.html">Index</a>: This page (static)</li>
+         <li><a href="node_wifi.html">Wi-Fi Config</a>: Controls Wi-Fi Client</li>
+         <li><a href="node_info.html">NodeMCU info</a>: Shows some basic NodeMCU</li>
+    </ul>
    ]===])
-end)
+   html_footer(connection)
+end

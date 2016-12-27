@@ -1,1 +1,1 @@
-pcall(function() dofile('start.lua') end)
+pcall(dofile, 'start.lua')
