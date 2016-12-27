@@ -1,5 +1,11 @@
 # esp8266-light
-ESP8266 (ESP-01) controlled light
+
+ESP8266 (ESP-01) Controlled Light.
+
+Idea is to collect all info together so that it will be possible to everyone to make the same project from scratch if it's wanted.
+
+There will be the code, schemas and photos as well as descriptions what has been made.
+See [wiki page](https://github.com/zhuj/esp8266-light/wiki) for more info.
 
 ### Current status picture
 
