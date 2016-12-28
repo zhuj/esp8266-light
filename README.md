@@ -11,8 +11,7 @@ See [wiki page](https://github.com/zhuj/esp8266-light/wiki) for more info.
 
 There will be the picture of the project status (will be updated each time I have something new to show):
 
-![this](https://github.com/zhuj/esp8266-light/raw/master/docs/esp8266-light-prototype-02.jpg "Prototype #2")
-
+![this](https://github.com/zhuj/esp8266-light/raw/master/docs/esp8266-light-prototype-03.jpg "Prototype #3")
 
 
 ### Code usages
