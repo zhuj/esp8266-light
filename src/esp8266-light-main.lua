@@ -4,6 +4,56 @@ require "common"
 light = doscript("esp8266-light-object")(GPIO2)
 light:blink(50, 50)
 
+-- main_timer
+main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
+
+   -- get time
+   local rtc = rtctime.get()
+   if (rtc <= 0) then
+      return
+   end
+
+   local hour = rtctime.epoch2cal(rtc)['hour']
+   if (hour == nil) then
+      return
+   end
+
+   local tz = config_read("light/timezone", nil)
+   if (tz ~= nil) then
+      local dst = ('DST' == config_read("light/timezone-dst", nil)) and 2 or 1
+      print("Info: Timezone: ", tz, "dst: ", dst)
+      tz = doscript("time-zones")[tz]
+      if (tz ~= nil) then
+         hour = (hour + tz[dst]) % 24 -- Wow! Lua works with negative modulas! nice!
+      end
+      dst = nil
+      tz = nil
+   end
+
+   print("Info: Hour: ", hour)
+
+   local hours = config_read("light/hours", '')
+   print("Info: Hours: ", hours)
+
+   local selected = (hours:find('|'..hour..'|', 1, true) ~= nil)
+   if (selected) then
+      if (light.state ~= 'on') then
+         light:up(150, 5)
+      end
+   else
+      if (light.state ~= 'off') then
+         light:down(150, 5)
+      end
+   end
+
+   -- free all resources
+   rtc = nil
+   hour = nil
+   hours = nil
+   collectgarbage()
+end)
+
+
 -- reset callback
 doscript("esp8266-light-reset")(GPIO0, light)
 
@@ -23,54 +73,11 @@ doscript("esp8266-light-wifi-connect")(function(connect)
    -- start http server
    doscript("httpserver")(80)
 
-   -- sntp (if connected)
    if (connect) then
-      local timer = doscript("esp8266-light-time")("pool.ntp.org", function()
-
-         -- get time
-         local tm = rtctime.epoch2cal(rtctime.get())
-         local hour = tm['hour']
-         if (hour == nil) then
-            return
-         end
-
-         local tz = config_read("light/timezone", nil)
-         if (tz ~= nil) then
-            print("Info: Timezone: ", tz)
-            tz = doscript("time-zones")[tz]
-            if (tz ~= nil) then
-               hour = (hour + tz[3]) % 24 -- Wow! Lua works with negative modulas! nice!
-            end
-            tz = nil
-         end
-
-         print("Info: Hour: ", hour)
-
-         local hours = config_read("light/hours", '')
-         print("Info: Hours: ", hours)
-
-         local selected = (hours:find('|'..hour..'|', 1, true) ~= nil)
-         if (selected) then
-            if (light.state ~= 'on') then
-               light:up(150, 5)
-            end
-         else
-            if (light.state ~= 'off') then
-               light:down(150, 5)
-            end
-         end
-
-         -- free all resources
-         tm = nil
-         hour = nil
-         hours = nil
-         collectgarbage()
-      end)
-      timer:start()
-   end
-
-   -- indicate that we have no connection
-   if (not connect) then
+      -- sntp (if connected)
+      main_timer:start()
+   else
+      -- indicate that we have no connection
       light:blink(100, 20)
    end
 

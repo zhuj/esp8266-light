@@ -6,6 +6,7 @@ return function(connection, req)
       -- POST
       local rd = req.requestData
       config_write("light/timezone", rd.timezone)
+      config_write("light/timezone-dst", rd.timezone_dst)
 
       local hours = ''
       for h=0,23 do
@@ -15,9 +16,15 @@ return function(connection, req)
       end
       config_write("light/hours", hours..'|')
       -- POST
+
+      -- refresh the light
+      if (main_timer ~= nil) then
+         main_timer:interval(5000) -- 5 seconds wait
+      end
    end
 
    local timezone = config_read("light/timezone", '')
+   local timezone_dst = config_read("light/timezone-dst", '')
    local hours = config_read("light/hours", '')
 
    connection:send([=[
@@ -28,13 +35,18 @@ return function(connection, req)
 
    -- timezone
    connection:send([=[<tr><td>TimeZone:</td><td><select name="timezone">]=])
-   for k,v in pairs(doscript("time-zones")) do
+   for k, _ in pairs(doscript("time-zones")) do
       local ek = html_escape(k)
-      connection:send([=[<option ]=])
-      if (k == timezone) then
-         connection:send([=[ selected ]=])
-      end
-      connection:send([=[ value="]=]..ek..[=[">]=] .. ek .. [=[</option>]=])
+      local selected = ((k == timezone) and "selected" or "")
+      connection:send([=[<option ]=] .. selected .. [=[ value="]=]..ek..[=[">]=] .. ek .. [=[</option>]=])
+   end
+   connection:send([=[</select>]=])
+
+   -- timezone_dst
+   connection:send([=[<select name="timezone_dst">]=])
+   for _, k in pairs({'GMT', 'DST'}) do
+      local selected = ((k == timezone_dst) and "selected" or "")
+      connection:send([=[<option ]=] .. selected .. [=[ value="]=].. k ..[=[">]=] .. k .. [=[</option>]=])
    end
    connection:send([=[</select></td></tr>]=])
 
@@ -42,14 +54,12 @@ return function(connection, req)
    connection:send([=[<tr><td>Active:</td><td>]=])
    for h=0,23 do
       local selected = (hours:find('|'..h..'|', 1, true) ~= nil)
-      connection:send([=[<div class="h-]=] .. h .. [=["><input type="checkbox" ]=])
-      if (selected) then
-         connection:send([=[ checked ]=])
-      end
-      connection:send([=[value="1" name="h]=] .. h .. [=[">]=] .. h .. [=[:00 - ]=] .. h ..[=[:59</input></div>]=])
+      local checked = (selected and "checked" or "")
+      connection:send(
+         [=[<div class="h-]=] .. h .. [=["><input type="checkbox" ]=] .. checked .. [=[ value="1" name="h]=] .. h .. [=[">]=] .. h .. [=[:00 - ]=] .. h ..[=[:59</input></div>]=]
+      )
    end
    connection:send([=[</td></tr>]=])
-
 
    connection:send([=[
      </table>
