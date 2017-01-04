@@ -1,5 +1,17 @@
 require "common"
 
+function html_escape(s)
+   if (s == nil) then return ''; end
+   return (string.gsub(s, "[}{\">/<'&]", {
+      ["&"] = "&amp;",
+      ["<"] = "&lt;",
+      [">"] = "&gt;",
+      ['"'] = "&quot;",
+      ["'"] = "&#39;",
+      ["/"] = "&#47;"
+   }))
+end
+
 function html_header(connection, title)
    connection:send("HTTP/1.0 200 OK\r\nServer: nodemcu-httpserver\r\nContent-Type: text/html\r\nCache-Control: private, no-store\r\nConnection: close\r\n\r\n")
    connection:send([===[<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">

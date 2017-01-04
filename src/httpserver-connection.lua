@@ -30,7 +30,7 @@ return function(connection)
 
    function newInstance:possible()
       local flushthreshold = 500
-      return (flushthreshold - #(self.data))
+      return math.max(1, flushthreshold - #(self.data))
    end
 
    function newInstance:send(payload)

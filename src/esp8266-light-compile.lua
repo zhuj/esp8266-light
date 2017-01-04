@@ -1,3 +1,4 @@
+-- XXX: don't use common.lua here
 --
 local compileAndRemoveIfNeeded = function(f)
    pcall(function()

@@ -1,4 +1,5 @@
 require "esp8266-light-html"
+
 return function(connection, req)
    html_header(connection, "Light Config")
 

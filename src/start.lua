@@ -1,3 +1,5 @@
+-- XXX:don't use common.lua here
+
 -- first, turn off GPIOs
 pcall(function()
    local GPIOs = { GPIO0, GPIO2, GPIO4, GPIO5, GPIO12, GPIO13, GPIO14, GPIO15, GPIO16 }
@@ -25,15 +27,10 @@ if (ok ~= true) then
    return
 end
 
--- try to compile httpserver (if required)
-local ok, err = pcall(function()
-   dofile("esp8266-light-compile.lua")
-end)
+-- try to compile all the code (if required)
+local ok, err = pcall(dofile, "esp8266-light-compile.lua")
 if (not ok) then print("Error: ", err); end
 
 -- try to start
-local ok, err = pcall(function()
-   require "common"
-   doscript('esp8266-light-main')
-end)
+local ok, err = pcall(dofile, 'esp8266-light-main.lc')
 if (not ok) then print("Error: ", err); end

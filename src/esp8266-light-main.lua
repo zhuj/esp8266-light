@@ -38,11 +38,11 @@ main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
    local selected = (hours:find('|'..hour..'|', 1, true) ~= nil)
    if (selected) then
       if (light.state ~= 'on') then
-         light:up(150, 5)
+         light:up(100, 5)
       end
    else
       if (light.state ~= 'off') then
-         light:down(150, 5)
+         light:down(50, 5)
       end
    end
 
@@ -52,7 +52,6 @@ main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
    hours = nil
    collectgarbage()
 end)
-
 
 -- reset callback
 doscript("esp8266-light-reset")(GPIO0, light)

@@ -62,19 +62,6 @@ function constrain(x, a, b)
 end
 
 --
-function html_escape(s)
-   if (s == nil) then return ''; end
-   return (string.gsub(s, "[}{\">/<'&]", {
-      ["&"] = "&amp;",
-      ["<"] = "&lt;",
-      [">"] = "&gt;",
-      ['"'] = "&quot;",
-      ["'"] = "&#39;",
-      ["/"] = "&#47;"
-   }))
-end
-
---
 function config_read(option, def)
    return try(function()
       local value = def
