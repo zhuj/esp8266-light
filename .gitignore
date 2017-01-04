@@ -46,3 +46,7 @@ ESPlorer
 nodemcu-firmware
 nodemcu-httpserver
 nodemcu-uploader
+
+# npm
+node_modules
+dist

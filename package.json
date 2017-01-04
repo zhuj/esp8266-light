@@ -1,0 +1,10 @@
+{
+  "name": "esp8266-light",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "gulp-cli": "~1.2.2",
+    "gulp": "~3.9.1",
+    "gulp-uglify": "~2.0.0"
+  }
+}
