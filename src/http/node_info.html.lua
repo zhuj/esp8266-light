@@ -12,7 +12,6 @@ local function sendAttr(connection, attr, val)
 end
 
 require "esp8266-light-html"
-
 return function(connection, req)
    html_header(connection, "Wi-Fi Client Config")
 

@@ -1,26 +1,3 @@
--- gpio
--- https://nodemcu.readthedocs.io/en/dev/en/modules/gpio/
--- http://www.esp8266.com/wiki/lib/exe/fetch.php?media=schematic_esp-12e.png
--- http://learn.acrobotic.com/uploads/esp8266_devkit_pinout.png
-
-GPIO0   = 3   -- PIN: firmware-update / factory-reset button
-GPIO1   = nil -- PIN: U0TXD (don't use me)
-GPIO2   = 4   -- PIN: light pwm
-GPIO3   = nil -- PIN: U0RXD (don't use me)
-GPIO4   = 2   -- ESP-01: unwired
-GPIO5   = 1   -- ESP-01: unwired
-GPIO6   = nil -- XXX: flash (CLK)
-GPIO7   = nil -- XXX: flash (MISO)
-GPIO8   = nil -- XXX: flash (MOSI)
-GPIO9   = 11  -- XXX: flash (-WP)   (QIO?)
-GPIO10  = 12  -- XXX: flash (-HOLD) (QIO?)
-GPIO11  = nil -- XXX: flash (CS)
-GPIO12  = 6   -- ESP-01: unwired
-GPIO13  = 7   -- ESP-01: unwired
-GPIO14  = 5   -- ESP-01: unwired
-GPIO15  = 8   -- ESP-01: unwired
-GPIO16  = 0   -- ESP-01: unwired, D0(GPIO16) can only be used as gpio read/write
-
 --
 function try(what)
    local status, err = pcall(what)
@@ -51,14 +28,6 @@ end
 function trim_to_empty(s)
    if (not s) then return ''; end
    return (s:gsub("^%s*(.-)%s*$", "%1"))
-end
-
---
-function constrain(x, a, b)
-   a, b = math.min(a, b), math.max(a, b)
-   if (x < a) then return a; end
-   if (x > b) then return b; end
-   return x
 end
 
 --

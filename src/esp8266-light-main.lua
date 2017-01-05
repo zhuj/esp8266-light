@@ -1,8 +1,14 @@
 require "common"
 
 -- load light (global object)
+local GPIO2 = 4   -- PIN: light pwm
 light = doscript("esp8266-light-object")(GPIO2)
-light:blink(50, 50)
+GPIO2 = nil
+
+-- reset callback
+local GPIO0 = 3   -- PIN: firmware-update / factory-reset button
+doscript("esp8266-light-reset")(GPIO0, light)
+GPIO0 = nil
 
 -- main_timer
 main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
@@ -53,10 +59,8 @@ main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
    collectgarbage()
 end)
 
--- reset callback
-doscript("esp8266-light-reset")(GPIO0, light)
-
 -- start wifi
+light:blink(50, 50) -- blink on initialization
 doscript("esp8266-light-wifi-connect")(function(connect)
 
    -- stop the light

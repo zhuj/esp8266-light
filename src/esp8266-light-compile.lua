@@ -1,14 +1,17 @@
 -- XXX: don't use common.lua here
 --
 local compileAndRemoveIfNeeded = function(f)
-   pcall(function()
+   local status, err = pcall(function()
       if file.exists(f) then
          print('Compiling:', f)
          node.compile(f)
          file.remove(f)
-         collectgarbage()
       end
    end)
+   if (not status) then
+      print('Error: ', err)
+   end
+   collectgarbage()
 end
 
 -- common code
@@ -32,7 +35,7 @@ compileAndRemoveIfNeeded('httpserver-request.lua')
 compileAndRemoveIfNeeded('httpserver-static.lua')
 
 -- http folder
-for fn, sz in pairs(file.list()) do
+for fn, _ in pairs(file.list()) do
    if (fn:find('^http%/.*%.lua$') == 1) then
       compileAndRemoveIfNeeded(fn)
    end

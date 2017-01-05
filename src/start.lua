@@ -2,8 +2,30 @@
 
 -- first, turn off GPIOs
 pcall(function()
-   local GPIOs = { GPIO0, GPIO2, GPIO4, GPIO5, GPIO12, GPIO13, GPIO14, GPIO15, GPIO16 }
-   for idx, port in pairs(GPIOs) do
+   -- gpio
+   -- https://nodemcu.readthedocs.io/en/dev/en/modules/gpio/
+   -- http://www.esp8266.com/wiki/lib/exe/fetch.php?media=schematic_esp-12e.png
+   -- http://learn.acrobotic.com/uploads/esp8266_devkit_pinout.png
+   local GPIOs = {
+      GPIO0   = 3,   -- PIN: firmware-update / factory-reset button
+      GPIO1   = nil, -- PIN: U0TXD (don't use me)
+      GPIO2   = 4,   -- PIN: light pwm
+      GPIO3   = nil, -- PIN: U0RXD (don't use me)
+      GPIO4   = 2,   -- ESP-01: unwired
+      GPIO5   = 1,   -- ESP-01: unwired
+      GPIO6   = nil, -- XXX: flash (CLK)
+      GPIO7   = nil, -- XXX: flash (MISO)
+      GPIO8   = nil, -- XXX: flash (MOSI)
+      GPIO9   = nil,  -- XXX: flash (-WP)
+      GPIO10  = nil,  -- XXX: flash (-HOLD)
+      GPIO11  = nil, -- XXX: flash (CS)
+      GPIO12  = 6,   -- ESP-01: unwired
+      GPIO13  = 7,   -- ESP-01: unwired
+      GPIO14  = 5,   -- ESP-01: unwired
+      GPIO15  = 8,   -- ESP-01: unwired
+      GPIO16  = 0   -- ESP-01: unwired, D0(GPIO16) can only be used as gpio read/write
+   }
+   for _, port in pairs(GPIOs) do
       if (port ~= nil) then
          gpio.mode(port, gpio.OUTPUT)
          gpio.write(port, gpio.LOW)
@@ -34,3 +56,5 @@ if (not ok) then print("Error: ", err); end
 -- try to start
 local ok, err = pcall(dofile, 'esp8266-light-main.lc')
 if (not ok) then print("Error: ", err); end
+
+print('heap: ', node.heap())

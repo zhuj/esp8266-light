@@ -2,9 +2,6 @@ require "common"
 
 return function(pool, callback)
 
-   local WAIT_MIN = 1000 * 30 -- 30 sec
-   local WAIT_MAX = WAIT_MIN * 2 * 5 -- 5 min
-
    -- function holder
    local errors = 0
    local timer = tmr.create()
@@ -21,10 +18,13 @@ return function(pool, callback)
             try(callback)
             errors = 0
 
-            timer:interval(WAIT_MAX)
+            timer:interval(1000 * 60 * 5) -- 5 min
             timer:start()
          end,
          function(err)
+            local WAIT_MIN = 1000 * 5 -- 5 sec
+            local WAIT_MAX = 1000 * 60 * 5 -- 5 min
+
             print('Error: SNTP: failed: ', err)
             local wait = WAIT_MIN * errors
             if (wait < WAIT_MAX) then
