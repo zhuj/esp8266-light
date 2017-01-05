@@ -34,7 +34,7 @@ end
 function config_read(option, def)
    return try(function()
       local value = def
-      local fd = file.open("config/"..option, "r")
+      local fd = file.open("config/" .. option, "r")
       if fd then
          value = trim_to_nil(fd:readline())
          fd:close()
@@ -49,7 +49,7 @@ end
 --
 function config_write(option, value)
    return try(function()
-      local fd = file.open("config/"..option, "w+")
+      local fd = file.open("config/" .. option, "w+")
       if fd then
          fd:writeline(trim_to_empty(value))
          fd:close()

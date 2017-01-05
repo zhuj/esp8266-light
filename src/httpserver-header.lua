@@ -6,7 +6,7 @@
 -- Part of nodemcu-httpserver, knows how to send an HTTP header.
 -- Author: Marcos Kirsch
 
-return function (connection, code, extension, isGzipped, isCached)
+return function(connection, code, extension, isGzipped, isCached)
 
    local mimeType = ({
       css = "text/css",
@@ -22,9 +22,9 @@ return function (connection, code, extension, isGzipped, isCached)
    })[extension] or "text/plain"
 
    local status = ({
-      [200]="OK",
-      [400]="Bad Request",
-      [404]="Not Found"
+      [200] = "OK",
+      [400] = "Bad Request",
+      [404] = "Not Found"
    })[code] or "Not Implemented"
 
    connection:send("HTTP/1.0 " .. code .. " " .. status .. "\r\nServer: nodemcu-httpserver\r\nContent-Type: " .. mimeType .. "\r\n")
@@ -36,5 +36,4 @@ return function (connection, code, extension, isGzipped, isCached)
       connection:send("Cache-Control: private, no-store\r\n")
    end
    connection:send("Connection: close\r\n\r\n")
-
 end

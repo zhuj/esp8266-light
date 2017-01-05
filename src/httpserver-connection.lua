@@ -77,7 +77,6 @@ return function(connection)
          -- and flush it (with yield)
          self:flush(true)
       end
-
    end
 
    return newInstance

@@ -80,7 +80,7 @@ end
 
 -- Parses the client's request. Returns a dictionary containing pretty much everything
 -- the server needs to know about the uri.
-return function (request)
+return function(request)
    local _
    local r = {}
    _, _, r.method, r.request = request:find("^([A-Z]+) (.+) HTTP")

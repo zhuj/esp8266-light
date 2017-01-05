@@ -15,7 +15,7 @@ return function(port, light)
 
       -- stop the previous one and start it again
       stop()
-      light:blink(10, 50)
+      light:blink(5, 50)
 
       -- start waiting
       local cnt = 0

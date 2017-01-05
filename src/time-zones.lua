@@ -5,8 +5,8 @@
 -- pleas uncomment places you want to use (see time-zones.lua.src)
 
 return {
-['Europe/Minsk']={3, 3, 3},
-['Europe/St.Petersburg']={3, 3, 3},
-['Europe/London']={0, 1, 0},
-['Asia/Yekaterinburg']={5, 5, 5},
+   ['Europe/Minsk'] = { 3, 3, 3 },
+   ['Europe/St.Petersburg'] = { 3, 3, 3 },
+   ['Europe/London'] = { 0, 1, 0 },
+   ['Asia/Yekaterinburg'] = { 5, 5, 5 },
 }

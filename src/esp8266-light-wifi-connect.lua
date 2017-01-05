@@ -48,7 +48,6 @@ end
 print('chip: ', node.chipid())
 print('heap: ', node.heap())
 
-local target_ssid = wifiConfig.stationPointConfig.ssid
 wifiConfig = nil
 collectgarbage()
 
@@ -63,38 +62,37 @@ return function(callback)
       local joinMaxAttempts = 5
 
       local timer = tmr.create()
-      timer:alarm(3000, tmr.ALARM_AUTO, function()
+      timer:alarm(5000, tmr.ALARM_AUTO, function()
          local ip = wifi.sta.getip()
          if (ip == nil) and (joinCounter < joinMaxAttempts) then
 
             -- not connected
-            print('Connecting to WiFi Access Point "' .. target_ssid .. '"...')
+            print('Connecting to WiFi Access Point ...')
             joinCounter = joinCounter + 1
-
-         else
-
-            -- stop the timer
-            timer:stop()
-            timer:unregister()
-            timer = nil
-
-            -- set wifi mode
-            if (joinCounter >= joinMaxAttempts) then
-               print('Failed to connect to WiFi Access Point "' .. target_ssid .. '".')
-               wifi.setmode(wifi.SOFTAP) -- force transform it to softap
-            else
-               print('Connectied to WiFi Access Point "' .. target_ssid .. '", IP: ' .. ip)
-               wifi.setmode(wifi.STATION) -- force transform it to station
-            end
-
-            -- clean up
-            joinCounter = nil
-            joinMaxAttempts = nil
-            collectgarbage()
-
-            -- call given callback
-            callback(wifi.sta.getip() ~= nil)
+            return
          end
+
+         -- stop the timer
+         timer:stop()
+         timer:unregister()
+         timer = nil
+
+         -- set wifi mode
+         if (joinCounter >= joinMaxAttempts) then
+            print('Failed to connect to WiFi Access Point.')
+            wifi.setmode(wifi.SOFTAP) -- force transform it to softap
+         else
+            print('Connectied to WiFi Access Point, IP: ' .. ip)
+            wifi.setmode(wifi.STATION) -- force transform it to station
+         end
+
+         -- clean up
+         joinCounter = nil
+         joinMaxAttempts = nil
+         collectgarbage()
+
+         -- call given callback
+         callback(wifi.sta.getip() ~= nil)
       end)
 
    else
@@ -103,4 +101,3 @@ return function(callback)
       callback(false)
    end
 end
-

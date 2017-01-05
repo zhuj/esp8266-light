@@ -1,18 +1,18 @@
 require "common"
 
-return function(pool, callback)
+return function(callback)
 
    -- function holder
    local errors = 0
    local timer = tmr.create()
    timer:register(1000, tmr.ALARM_AUTO, function()
 
-      -- first, stop the timer (we will start them after)
+      -- first, stop the timer (we will start them after all)
       timer:stop()
 
       -- Note that when the rtctime module is available, there is no need to explicitly call rtctime.set():
       -- this module takes care of doing so internally automatically, for best accuracy.
-      sntp.sync(pool,
+      sntp.sync("pool.ntp.org",
          function(sec, usec, server)
             print('SNTP: ', sec, usec, server)
             try(callback)
@@ -36,9 +36,7 @@ return function(pool, callback)
 
             timer:interval(wait)
             timer:start()
-         end
-      )
-
+         end)
    end)
 
    -- return the timer

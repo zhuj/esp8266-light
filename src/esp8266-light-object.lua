@@ -112,7 +112,7 @@ return function(port)
    end
 
    function light:blink_down(interval, step)
-      self:_change(interval, 1023, 0, step, self.blink)
+      self:_change(interval, 0, 1023, step, self.blink)
    end
 
    -- clear the light

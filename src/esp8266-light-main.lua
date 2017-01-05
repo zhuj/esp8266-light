@@ -1,17 +1,17 @@
 require "common"
 
 -- load light (global object)
-local GPIO2 = 4   -- PIN: light pwm
+local GPIO2 = 4 -- PIN: light pwm
 light = doscript("esp8266-light-object")(GPIO2)
 GPIO2 = nil
 
 -- reset callback
-local GPIO0 = 3   -- PIN: firmware-update / factory-reset button
+local GPIO0 = 3 -- PIN: firmware-update / factory-reset button
 doscript("esp8266-light-reset")(GPIO0, light)
 GPIO0 = nil
 
 -- main_timer
-main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
+main_timer = doscript("esp8266-light-time")(function()
 
    -- get time
    local rtc = rtctime.get()
@@ -41,7 +41,7 @@ main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
    local hours = config_read("light/hours", '')
    print("Info: Hours: ", hours)
 
-   local selected = (hours:find('|'..hour..'|', 1, true) ~= nil)
+   local selected = (hours:find('|' .. hour .. '|', 1, true) ~= nil)
    if (selected) then
       if (light.state ~= 'on') then
          light:up(100, 5)
@@ -60,7 +60,7 @@ main_timer = doscript("esp8266-light-time")("pool.ntp.org", function()
 end)
 
 -- start wifi
-light:blink(50, 50) -- blink on initialization
+light:blink(20, 20) -- blink on initialization
 doscript("esp8266-light-wifi-connect")(function(connect)
 
    -- stop the light
@@ -83,6 +83,5 @@ doscript("esp8266-light-wifi-connect")(function(connect)
       -- indicate that we have no connection
       light:blink(100, 20)
    end
-
 end)
 

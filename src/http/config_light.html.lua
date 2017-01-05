@@ -9,12 +9,12 @@ return function(connection, req)
       config_write("light/timezone-dst", rd.timezone_dst)
 
       local hours = ''
-      for h=0,23 do
+      for h = 0, 23 do
          if (rd['h' .. h] ~= nil) then
             hours = hours .. '|' .. h
          end
       end
-      config_write("light/hours", hours..'|')
+      config_write("light/hours", hours .. '|')
       -- POST
 
       -- refresh the light
@@ -37,26 +37,24 @@ return function(connection, req)
    for k, _ in pairs(doscript("time-zones")) do
       local ek = html_escape(k)
       local selected = ((k == timezone) and "selected" or "")
-      connection:send('<option ' .. selected .. ' value="'..ek..'">' .. ek ..'</option>')
+      connection:send('<option ' .. selected .. ' value="' .. ek .. '">' .. ek .. '</option>')
    end
    connection:send('</select>')
 
    -- timezone_dst
    connection:send('<select name="timezone_dst">')
-   for _, k in pairs({'GMT', 'DST'}) do
+   for _, k in pairs({ 'GMT', 'DST' }) do
       local selected = ((k == timezone_dst) and "selected" or "")
-      connection:send('<option ' .. selected .. ' value="'.. k ..'">' .. k .. '</option>')
+      connection:send('<option ' .. selected .. ' value="' .. k .. '">' .. k .. '</option>')
    end
    connection:send('</select></td></tr>')
 
    -- active hours
    connection:send('<tr><td>Active:</td><td>')
-   for h=0,23 do
-      local selected = (hours:find('|'..h..'|', 1, true) ~= nil)
+   for h = 0, 23 do
+      local selected = (hours:find('|' .. h .. '|', 1, true) ~= nil)
       local checked = (selected and "checked" or "")
-      connection:send(
-         '<div class="h-' .. h .. '"><input type="checkbox" ' .. checked .. ' value="1" name="h' .. h .. '">' .. h .. ':00 - ' .. h ..':59</input></div>'
-      )
+      connection:send('<div class="h-' .. h .. '"><input type="checkbox" ' .. checked .. ' value="1" name="h' .. h .. '">' .. h .. ':00 - ' .. h .. ':59</input></div>')
    end
    connection:send('</td></tr>')
 

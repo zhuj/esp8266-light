@@ -8,10 +8,10 @@
 require "common"
 
 -- Starts web server in the specified port.
-return function (port)
+return function(port)
 
    local s = net.createServer(net.TCP, 2) -- 2 seconds client timeout
-   s:listen(port, function (connection)
+   s:listen(port, function(connection)
 
       -- This variable holds the thread (actually a Lua coroutine) used for sending data back to the user.
       -- We do it in a separate thread because we need to send in little chunks and wait for the onSent event
@@ -33,12 +33,10 @@ return function (port)
             collectgarbage()
          end)
 
-         local status, err = coroutine.resume(
-            connectionThread,
+         local status, err = coroutine.resume(connectionThread,
             serveFunction,
             doscript("httpserver-connection")(connection),
-            req
-         )
+            req)
 
          if (not status) then
             print("Error: " .. err)
@@ -58,7 +56,7 @@ return function (port)
 
          if #(uri.file) > 32 then
             -- nodemcu-firmware cannot handle long filenames.
-            uri.args = {code = 400, errorString = "Bad Request"}
+            uri.args = { code = 400, errorString = "Bad Request" }
             serveFunction = "httpserver-error"
          else
             -- check for static resources first
@@ -89,26 +87,25 @@ return function (port)
 
             -- process file
             if (not fileExists) then
-               uri.args = {code = 404, errorString = "Not Found"}
+               uri.args = { code = 404, errorString = "Not Found" }
                serveFunction = "httpserver-error"
 
             elseif (uri.isScript) then
                serveFunction = uri.file
                if (not serveFunction) then
-                  uri.args = {code = 500, errorString = "Error"}
+                  uri.args = { code = 500, errorString = "Error" }
                   serveFunction = "httpserver-error"
                end
 
             else
-               local allowStatic = { GET=true }
+               local allowStatic = { GET = true }
                if (allowStatic[method] == true) then
-                  uri.args = {file = uri.file, ext = uri.ext, isGzipped = uri.isGzipped}
+                  uri.args = { file = uri.file, ext = uri.ext, isGzipped = uri.isGzipped }
                   serveFunction = "httpserver-static"
                else
-                  uri.args = {code = 405, errorString = "Method not supported"}
+                  uri.args = { code = 405, errorString = "Method not supported" }
                   serveFunction = "httpserver-error"
                end
-
             end
          end
 
@@ -119,8 +116,8 @@ return function (port)
       local function isBodyComplete(body)
          local cl = body:find("Content-Length: ", 1, true)
          if (cl) then
-            cl = tonumber(body:match("%d+", cl+16))
-            if (cl > #(body) - (body:find("\r\n\r\n", 1, true)+4) + 1) then
+            cl = tonumber(body:match("%d+", cl + 16))
+            if (cl > #(body) - (body:find("\r\n\r\n", 1, true) + 4) + 1) then
                return false
             end
          end
@@ -154,12 +151,12 @@ return function (port)
          payload = nil
          collectgarbage()
 
-         local allowRequest = { GET=true, POST=true, PUT=true }
+         local allowRequest = { GET = true, POST = true, PUT = true }
          if (allowRequest[req.method] == true) then
             handleRequest(connection, req)
          else
             local fileServeFunction = "httpserver-error"
-            req.uni.args = {code = 501, errorString = "Not Implemented"}
+            req.uni.args = { code = 501, errorString = "Not Implemented" }
             startServing(fileServeFunction, connection, req)
          end
 
@@ -200,14 +197,12 @@ return function (port)
       connection:on("receive", onReceive)
       connection:on("sent", onSent)
       connection:on("disconnection", onDisconnect)
-
    end)
 
    -- false and nil evaluate as false
    local ip = wifi.sta.getip()
    if (not ip) then ip = wifi.ap.getip() end
    if (not ip) then ip = "unknown IP" end
-   print("nodemcu-httpserver running at http://" .. ip .. ":" ..  port)
+   print("nodemcu-httpserver running at http://" .. ip .. ":" .. port)
    return s
-
 end

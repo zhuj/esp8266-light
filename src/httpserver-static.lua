@@ -6,7 +6,7 @@
 -- Part of nodemcu-httpserver, handles sending static files to client.
 -- Author: Marcos Kirsch
 
-return function (connection, req)
+return function(connection, req)
 
    local args = req.uri.args
    local mimeType = ({
