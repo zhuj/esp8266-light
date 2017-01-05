@@ -10,6 +10,9 @@ return function(connection, req)
       -- POST
    end
 
+   -- clear rqData
+   req.requestData = nil
+
    local ssid = config_read("stationPointConfig/ssid", '')
    local pass = config_read("stationPointConfig/pass", '')
 

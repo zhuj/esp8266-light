@@ -23,49 +23,44 @@ return function(connection, req)
       end
    end
 
+   -- clear rqData
+   req.requestData = nil
+
    local timezone = config_read("light/timezone", '')
    local timezone_dst = config_read("light/timezone-dst", '')
    local hours = config_read("light/hours", '')
 
-   connection:send([=[
-    <h1>Wi-Fi Client Config</h1>
-    <form method="POST">
-     <table class="fields">
-    ]=])
+   connection:send('<h1>Wi-Fi Client Config</h1><form method="POST"><table class="fields">')
 
    -- timezone
-   connection:send([=[<tr><td>TimeZone:</td><td><select name="timezone">]=])
+   connection:send('<tr><td>TimeZone:</td><td><select name="timezone">')
    for k, _ in pairs(doscript("time-zones")) do
       local ek = html_escape(k)
       local selected = ((k == timezone) and "selected" or "")
-      connection:send([=[<option ]=] .. selected .. [=[ value="]=]..ek..[=[">]=] .. ek .. [=[</option>]=])
+      connection:send('<option ' .. selected .. ' value="'..ek..'">' .. ek ..'</option>')
    end
-   connection:send([=[</select>]=])
+   connection:send('</select>')
 
    -- timezone_dst
-   connection:send([=[<select name="timezone_dst">]=])
+   connection:send('<select name="timezone_dst">')
    for _, k in pairs({'GMT', 'DST'}) do
       local selected = ((k == timezone_dst) and "selected" or "")
-      connection:send([=[<option ]=] .. selected .. [=[ value="]=].. k ..[=[">]=] .. k .. [=[</option>]=])
+      connection:send('<option ' .. selected .. ' value="'.. k ..'">' .. k .. '</option>')
    end
-   connection:send([=[</select></td></tr>]=])
+   connection:send('</select></td></tr>')
 
    -- active hours
-   connection:send([=[<tr><td>Active:</td><td>]=])
+   connection:send('<tr><td>Active:</td><td>')
    for h=0,23 do
       local selected = (hours:find('|'..h..'|', 1, true) ~= nil)
       local checked = (selected and "checked" or "")
       connection:send(
-         [=[<div class="h-]=] .. h .. [=["><input type="checkbox" ]=] .. checked .. [=[ value="1" name="h]=] .. h .. [=[">]=] .. h .. [=[:00 - ]=] .. h ..[=[:59</input></div>]=]
+         '<div class="h-' .. h .. '"><input type="checkbox" ' .. checked .. ' value="1" name="h' .. h .. '">' .. h .. ':00 - ' .. h ..':59</input></div>'
       )
    end
-   connection:send([=[</td></tr>]=])
+   connection:send('</td></tr>')
 
-   connection:send([=[
-     </table>
-     <input type="submit" name="submit" value="Submit">
-    </form>
-   ]=])
+   connection:send('</table><input type="submit" name="submit" value="Submit"></form>')
 
    html_footer(connection)
 end
