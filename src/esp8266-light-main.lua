@@ -44,11 +44,11 @@ main_timer = doscript("esp8266-light-time")(function()
    local selected = (hours:find('|' .. hour .. '|', 1, true) ~= nil)
    if (selected) then
       if (light.state ~= 'on') then
-         light:up(100, 5)
+         light:up(100, 8)
       end
    else
       if (light.state ~= 'off') then
-         light:down(50, 5)
+         light:down(50, 8)
       end
    end
 
