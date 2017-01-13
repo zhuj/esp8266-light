@@ -7,9 +7,18 @@ local wifiConfig = {}
 -- wifi.wifi.STATIONAP  -- both station and access point
 wifiConfig.mode = wifi.SOFTAP -- both station and access point
 
+local ssid = (function()
+   local id = trim_to_nil(wifi.ap.getmac())
+   if (id ~= nil) then id = id:gsub(":", {[":"]=""}):sub(7)
+   else id = node.chipid() end
+   return "ESP-" .. id
+end)()
+
 wifiConfig.accessPointConfig = {}
-wifiConfig.accessPointConfig.ssid = "ESP-" .. node.chipid() -- Name of the SSID you want to create
-wifiConfig.accessPointConfig.pwd = "ESP-" .. node.chipid() -- WiFi password - at least 8 characters
+wifiConfig.accessPointConfig.ssid = ssid -- Name of the SSID you want to create
+wifiConfig.accessPointConfig.pwd = ssid -- WiFi password - at least 8 characters
+print('AP: [' .. wifiConfig.accessPointConfig.ssid .. ']')
+ssid = nil
 
 wifiConfig.accessPointIpConfig = {}
 wifiConfig.accessPointIpConfig.ip = "192.168.0.1"
