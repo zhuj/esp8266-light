@@ -67,14 +67,20 @@ doscript("esp8266-light-wifi-connect")(function(connect)
    light:stop()
 
    -- register mDNS
-   local mdns_name = "light-" .. node.chipid()
+   local mdns_id = trim_to_nil((connect) and wifi.sta.getmac() or wifi.ap.getmac())
+   if (mdns_id ~= nil) then mdns_id = mdns_id:gsub(":", {[":"]=""}):sub(7)
+   else mdns_id = node.chipid() end
+
+   local mdns_name = "light-" .. mdns_id
+
    print("Info: mDNS: " .. mdns_name .. ".local")
    mdns.register(mdns_name, {
-      description = "Light @" .. node.chipid(),
+      description = "Light @" .. mdns_id,
       service = "http",
       port = 80
    })
    mdns_name = nil
+   mdns_id = nil
 
    -- start http server
    doscript("httpserver")(80)
