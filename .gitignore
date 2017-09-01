@@ -40,7 +40,9 @@ luac.out
 *.hex
 
 # project specific .gitignore
+.bin
 src/config
+mqtt/config
 binaries/esptool.py
 ESPlorer
 nodemcu-firmware

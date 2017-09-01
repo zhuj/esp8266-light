@@ -59,5 +59,3 @@ if (not ok) then print("Error: ", err); end
 -- try to start
 local ok, err = pcall(dofile, 'esp8266-light-main.lc')
 if (not ok) then print("Error: ", err); end
-
-print('heap: ', node.heap())

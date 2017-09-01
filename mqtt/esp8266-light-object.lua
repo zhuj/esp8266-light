@@ -21,7 +21,7 @@ function _pwm(port, clk)
       if ((pwm.getclock(port) > 0) and (pwm.getduty(port) > 0)) then
          pwm.setduty(port, clk)
       else
-         pwm.setup(port, 500, clk)
+         pwm.setup(port, 250, clk)
          pwm.start(port)
       end
    else
