@@ -1,0 +1,3 @@
+     file, gpio,            mqtt, net, node, pwm,                  rtctime, sntp,              tmr, uart, wifi
+
+adc, file, gpio, i2c, mdns, mqtt, net, node, pwm, rtcfifo, rtcmem, rtctime, sntp, spi, struct, tmr, uart, wifi
